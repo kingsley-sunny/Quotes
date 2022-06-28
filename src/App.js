@@ -1,24 +1,45 @@
-import logo from './logo.svg';
-import './App.css';
+import { lazy, Suspense } from "react";
+import { Redirect, Route, Switch } from "react-router-dom";
+import Layout from "./components/layout/Layout";
+import LoadingSpinner from "./components/UI/LoadingSpinner";
+
+const NewQuotes = lazy(() => import("./Pages/NewQuotes"));
+const PageNotFound = lazy(() => import("./Pages/PageNotFound"));
+const QuoteDetails = lazy(() => import("./Pages/QuoteDetails"));
+
+// This is not neccessary bcause it is the home page
+const AllQuotes = lazy(() => import("./Pages/AllQuotes"));
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Layout>
+        <Suspense
+          fallback={
+            <div className="centered">
+              <LoadingSpinner />
+            </div>
+          }>
+          <Switch>
+            <Route path="/" exact>
+              <Redirect to="/quotes" />
+            </Route>
+            <Route path="/quotes" exact>
+              <AllQuotes />
+            </Route>
+            <Route path="/quotes/:quoteId">
+              <QuoteDetails />
+            </Route>
+            <Route path="/new-quote">
+              <NewQuotes />
+            </Route>
+            <Route path="*">
+              <PageNotFound />
+            </Route>
+          </Switch>
+        </Suspense>
+      </Layout>
+    </>
   );
 }
 
